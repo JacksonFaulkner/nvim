@@ -8,11 +8,15 @@ return {
         "L3MON4D3/LuaSnip",
         "saadparwaiz1/cmp_luasnip",
         "onsails/lspkind.nvim",
+        "rafamadriz/friendly-snippets", -- ES7+ React/Redux/React-Native snippets
     },
     config = function()
         local cmp = require("cmp")
         local luasnip = require("luasnip")
         local lspkind = require("lspkind")
+        
+        -- Load friendly-snippets (includes ES7+ React snippets)
+        require("luasnip.loaders.from_vscode").lazy_load()
 
         cmp.setup({
             snippet = {

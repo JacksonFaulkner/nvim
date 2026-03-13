@@ -1,0 +1,157 @@
+[
+  {
+    "key": "space",
+    "command": "",
+    "when": "editorTextFocus && !inputFocus"
+  },
+  {
+    "key": "space f f",
+    "command": "workbench.action.quickOpen",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space f b",
+    "command": "workbench.action.showAllEditors",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space f r",
+    "command": "workbench.action.openRecent",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space f g",
+    "command": "workbench.action.findInFiles",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space w w",
+    "command": "workbench.action.files.save",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space w q",
+    "command": "workbench.action.closeActiveEditor",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space w e",
+    "command": "workbench.action.files.save",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space y",
+    "command": "editor.action.clipboardCopyAction",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space t t",
+    "command": "workbench.action.terminal.toggleTerminal",
+    "when": "terminal.active"
+  },
+  {
+    "key": "space t l",
+    "command": "workbench.action.terminal.new",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "space g d",
+    "command": "editor.action.revealDefinition",
+    "when": "editorHasDefinitionProvider && editorTextFocus"
+  },
+  {
+    "key": "space g r",
+    "command": "editor.action.goToReferences",
+    "when": "editorHasReferenceProvider && editorTextFocus"
+  },
+  {
+    "key": "space g h",
+    "command": "editor.action.showHover",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space g t",
+    "command": "editor.action.goToTypeDefinition",
+    "when": "editorHasTypeDefinitionProvider && editorTextFocus"
+  },
+  {
+    "key": "space g j",
+    "command": "editor.action.marker.next",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space g l",
+    "command": "editor.action.formatDocument",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "space l f",
+    "command": "editor.action.formatDocument.multiple",
+    "when": "editorTextFocus && !editorReadonly && editorLangId == 'json'"
+  },
+  {
+    "key": "space w h",
+    "command": "workbench.action.focusLeftGroup",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space w j",
+    "command": "workbench.action.focusBelowGroup",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space w k",
+    "command": "workbench.action.focusAboveGroup",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space w l",
+    "command": "workbench.action.focusRightGroup",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+s h",
+    "command": "workbench.action.focusLeftGroup",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+s j",
+    "command": "workbench.action.focusBelowGroup",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+s k",
+    "command": "workbench.action.focusAboveGroup",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+s l",
+    "command": "workbench.action.focusRightGroup",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "space v s",
+    "command": "workbench.action.splitEditor",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+j",
+    "command": "editor.action.moveLinesDownAction",
+    "when": "editorTextFocus && !editorReadonly && vim.mode == 'Visual'"
+  },
+  {
+    "key": "shift+k",
+    "command": "editor.action.moveLinesUpAction",
+    "when": "editorTextFocus && !editorReadonly && vim.mode == 'Visual'"
+  },
+  {
+    "key": "shift+,",
+    "command": "editor.action.outdentLines",
+    "when": "editorTextFocus && !editorReadonly && vim.mode == 'Visual'"
+  },
+  {
+    "key": "shift+.",
+    "command": "editor.action.indentLines",
+    "when": "editorTextFocus && !editorReadonly && vim.mode == 'Visual'"
+  }
+]

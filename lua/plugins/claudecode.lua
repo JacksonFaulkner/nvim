@@ -50,6 +50,28 @@ return {
               mode = "t",
               desc = "Hide Claude window",
             },
+            buf_prev = {
+              "H",
+              function(self)
+                self:hide()
+                vim.schedule(function()
+                  vim.cmd("bprev")
+                end)
+              end,
+              mode = "n",
+              desc = "Previous buffer",
+            },
+            buf_next = {
+              "L",
+              function(self)
+                self:hide()
+                vim.schedule(function()
+                  vim.cmd("bnext")
+                end)
+              end,
+              mode = "n",
+              desc = "Next buffer",
+            },
           },
         },
       },
@@ -86,7 +108,20 @@ return {
   keys = {
     { "<leader>a",  nil,                              desc = "AI/Claude Code" },
     { "<leader>ac", "<cmd>ClaudeCode<cr>",            desc = "Toggle Claude" },
-    { "<leader>af", "<cmd>ClaudeCodeFocus<cr>",       desc = "Focus Claude" },
+    {
+      "<leader>af",
+      function()
+        Snacks.terminal.toggle("claude", {
+          interactive = true,
+          win = {
+            position = "right",
+            width = 0.40,
+            border = "rounded",
+          },
+        })
+      end,
+      desc = "Claude split right",
+    },
     { "<leader>ar", "<cmd>ClaudeCode --resume<cr>",   desc = "Resume Claude" },
     { "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
     { "<leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model" },
@@ -98,14 +133,7 @@ return {
       desc = "Add file from tree",
       ft = { "NvimTree", "neo-tree", "oil", "minifiles", "netrw" },
     },
-    {
-      "<leader>ao",
-      function()
-        require("custom_plugins.docs_view").toggle()
-      end,
-      desc = "Toggle annotated docs view",
-    },
-    { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
+{ "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
     { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>",   desc = "Deny diff" },
     { "<leader>aS", "<cmd>ClaudeCodeStatus<cr>",     desc = "Claude status" },
     {

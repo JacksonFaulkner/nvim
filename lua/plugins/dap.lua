@@ -1,35 +1,46 @@
 return {
-    {
-        "mfussenegger/nvim-dap",
-        config = function()
-            local dap = require("dap")
-            local cwd = vim.fn.getcwd()
-            local venv_python = cwd .. "/.venv/bin/python"
+  {
+    "mfussenegger/nvim-dap",
+    config = function()
+      local dap = require("dap")
+      local cwd = vim.fn.getcwd()
+      local venv_python = cwd .. "/.venv/bin/python"
 
-            -- Open DAP terminals in a vertical split to the right
-            dap.defaults.fallback.terminal_win_cmd = "vsplit | wincmd l"
+      dap.defaults.fallback.terminal_win_cmd = "vsplit | wincmd l"
 
-            -- Python adapter using debugpy inside project .venv
-            dap.adapters.python = {
-                type = "executable",
-                command = venv_python,
-                args = { "-m", "debugpy.adapter" },
-            }
+      dap.adapters.python = {
+        type = "executable",
+        command = venv_python,
+        args = { "-m", "debugpy.adapter" },
+      }
 
-            -- Base Python configurations table
-            dap.configurations.python = dap.configurations.python or {}
+      dap.configurations.python = dap.configurations.python or {}
 
-            -- Debug current file
-            table.insert(dap.configurations.python, {
-                name = "Launch file",
-                type = "python",
-                request = "launch",
-                program = "${file}",
-                console = "integratedTerminal",
-                cwd = cwd,
-            })
-
-
-        end,
+      table.insert(dap.configurations.python, {
+        name = "Launch file",
+        type = "python",
+        request = "launch",
+        program = "${file}",
+        console = "integratedTerminal",
+        cwd = cwd,
+      })
+    end,
+  },
+  {
+    "rcarriga/nvim-dap-ui",
+    enabled = false,
+  },
+  {
+    "miroshQa/debugmaster.nvim",
+    dependencies = {
+      "mfussenegger/nvim-dap",
+      "jbyuki/one-small-step-for-vimkind",
     },
+    config = function()
+      local dm = require("debugmaster")
+      vim.keymap.set({ "n", "v" }, "<leader>d", dm.mode.toggle, { nowait = true, desc = "Toggle debug mode" })
+      vim.keymap.set("t", "<C-\\>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+      dm.plugins.osv_integration.enabled = true
+    end,
+  },
 }

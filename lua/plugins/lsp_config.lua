@@ -21,6 +21,7 @@ return {
               "terraformls",
               "cssls",
               "eslint",
+              "gopls",
           },
           automatic_installation = true,
       })
@@ -176,7 +177,7 @@ return {
               local clients = vim.lsp.get_clients({ bufnr = bufnr })
               local function supports_format(client)
                   if client.supports_method then
-                      return client.supports_method("textDocument/formatting")
+                      return client:supports_method("textDocument/formatting", bufnr)
                   end
                   local caps = client.server_capabilities or {}
                   return caps.documentFormattingProvider or caps.documentRangeFormattingProvider

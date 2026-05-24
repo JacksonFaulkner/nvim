@@ -6,14 +6,17 @@ return {
       "williamboman/mason.nvim",
       "jay-babu/mason-null-ls.nvim",
     },
-    event = "BufReadPre",
+    event = { "BufReadPre", "BufNewFile" },
     config = function()
       local lsp = vim.lsp
-      if lsp and not lsp._request_name_to_capability then
-        if lsp.protocol and lsp.protocol._request_name_to_capability then
-          lsp._request_name_to_capability = lsp.protocol._request_name_to_capability
-        else
-          lsp._request_name_to_capability = {}
+      -- nvim 0.12 renamed protocol._request_name_to_capability → _request_name_to_server_capability.
+      -- none-ls reads from the old names; alias so capability_is_disabled works.
+      if lsp and lsp.protocol then
+        local src = lsp.protocol._request_name_to_capability
+            or lsp.protocol._request_name_to_server_capability
+        if src then
+          lsp.protocol._request_name_to_capability = src
+          lsp._request_name_to_capability = src
         end
       end
 

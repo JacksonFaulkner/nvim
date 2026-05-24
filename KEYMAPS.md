@@ -1,4 +1,4 @@
-# Keymaps Reference (test diff - delete this parenthetical)
+# Keymaps Reference
 
 Leader key: `Space`
 
@@ -11,19 +11,19 @@ Leader key: `Space`
 
 ## File Operations
 
-| Keys         | Mode | Description                     |
-| ------------ | ---- | ------------------------------- |
-| `<leader>ww` | n    | Save file                       |
-| `<leader>wq` | n    | Save and quit                   |
-| `<leader>we` | n    | Save and open Oil               |
-| `<leader>ga` | n    | Save (+ ESLint for JS/TS files) |
+| Keys         | Mode | Description           |
+| ------------ | ---- | --------------------- |
+| `<leader>ww` | n    | Save file             |
+| `<leader>wq` | n    | Save and quit         |
+| `<leader>we` | n    | Save and open Oil     |
+| `<leader>ae` | n    | Reload file from disk |
+| `-`          | n    | Open parent in Oil    |
 
 ## LazyGit
 
 | Keys         | Mode | Description                     |
 | ------------ | ---- | ------------------------------- |
-| `<leader>gg` | n    | Open LazyGit                    |
-| `<leader>to` | n    | Open LazyGit in new WezTerm tab |
+| `<leader>to` | n    | Open LazyGit in new tmux window |
 
 ## Telescope - Find Files
 
@@ -35,16 +35,15 @@ Leader key: `Space`
 | `<leader>fjg`  | n    | Grep (1 dir up)                                    |
 | `<leader>fjjf` | n    | Find files (2 dirs up)                             |
 | `<leader>fjjg` | n    | Grep (2 dirs up)                                   |
-| ...            | n    | Pattern continues: add `j` per level up (up to 20) |
-| `<leader>fw`   | n    | Find files (CWD)                                   |
-| `<leader>fw.`  | n    | Grep (CWD)                                         |
-| `<leader>fG`   | n    | Grep project root                                  |
-| `<leader>fW`   | n    | Grep whole word under cursor                       |
+| `<leader>fjjjf`| n    | Find files (3 dirs up)                             |
+| `<leader>fjjjg`| n    | Grep (3 dirs up)                                   |
+| `<leader>fh`   | n    | Find files CWD (hidden + ignored)                  |
+| `<leader>fhg`  | n    | Grep (CWD)                                         |
 | `<leader>fb`   | n    | Find buffers                                       |
 | `<leader>fr`   | n    | Find recent files (oldfiles)                       |
 | `<leader>fe`   | n    | Find recent buffers                                |
 | `<leader>fj`   | n    | Persistent file history (custom)                   |
-| `<leader>fh`   | n    | Find all files (hidden + ignored)                  |
+| `<leader>fw`   | n    | Tmux sessionx                                      |
 
 ### Telescope Insert Mode
 
@@ -52,6 +51,13 @@ Leader key: `Space`
 | ------- | ---- | -------------------------------------- |
 | `<C-u>` | i    | Disabled (default scroll up removed)   |
 | `<C-d>` | i    | Disabled (default scroll down removed) |
+
+## Line Navigation
+
+| Keys | Mode | Description                    |
+| ---- | ---- | ------------------------------ |
+| `gh` | n, v | Go to first non-blank char     |
+| `gl` | n, v | Go to last non-blank char      |
 
 ## Moving Text
 
@@ -62,9 +68,10 @@ Leader key: `Space`
 
 ## Clipboard
 
-| Keys        | Mode | Description              |
-| ----------- | ---- | ------------------------ |
-| `<leader>y` | n, v | Yank to system clipboard |
+| Keys         | Mode | Description                              |
+| ------------ | ---- | ---------------------------------------- |
+| `<leader>y`  | n, v | Yank to system clipboard                 |
+| `<leader>cy` | n    | Copy Auth0 token + run in Chrome console |
 
 ## Indentation
 
@@ -83,25 +90,17 @@ Leader key: `Space`
 | `<leader>{` | x    | Surround with curly braces    |
 | `<leader>[` | x    | Surround with square brackets |
 
-## Variable Formatting
-
-| Keys         | Mode | Description                         |
-| ------------ | ---- | ----------------------------------- |
-| `<leader>sv` | v    | Align assignment block in selection |
-
 ## LSP
 
 | Keys         | Mode | Description                         |
 | ------------ | ---- | ----------------------------------- |
 | `<leader>gd` | n    | Go to definition                    |
 | `<leader>gr` | n    | Show references                     |
-| `<leader>ge` | n    | Show references (alias)             |
 | `<leader>gh` | n    | Hover documentation                 |
 | `<leader>gt` | n    | Show type definition                |
 | `<leader>gs` | n    | List workspace symbols              |
 | `<leader>gj` | n    | Show diagnostics in floating window |
-| `<leader>gl` | n    | Format with LSP                     |
-| `<leader>gy` | n    | Ruff fixAll (unused imports, etc.)  |
+| `<leader>gk` | n    | Format with LSP + ESLint            |
 | `<leader>gf` | n    | Ruff: Fix all auto-fixable issues   |
 | `<leader>gi` | n    | Run ESLint in popup                 |
 
@@ -110,47 +109,41 @@ Leader key: `Space`
 | Keys         | Mode | Description            |
 | ------------ | ---- | ---------------------- |
 | `<leader>tf` | n    | Format Terraform files |
-| `<leader>lf` | n    | Format JSON using jq   |
 
 ## Terminal
 
-| Keys         | Mode | Description                             |
-| ------------ | ---- | --------------------------------------- |
-| `<C-\>`      | n    | Toggle terminal (ToggleTerm)            |
-| `<leader>tt` | n    | Open vertical terminal (80 cols)        |
-| `<leader>tl` | n    | Open terminal right (vertical, 80 cols) |
-| `<Esc>`      | t    | Exit terminal mode                      |
-| `jk`         | t    | Exit terminal mode                      |
-| `<C-\>`      | t    | Exit terminal mode (debugmaster)        |
+| Keys         | Mode | Description                       |
+| ------------ | ---- | --------------------------------- |
+| `<leader>tl` | n    | Toggle terminal right (vertical)  |
+| `<Esc>`      | t    | Exit terminal mode                |
+| `jk`         | t    | Exit terminal mode                |
 
 ## Window Movement
 
-| Keys         | Mode | Description          |
-| ------------ | ---- | -------------------- |
-| `<leader>wh` | n    | Move to window left  |
-| `<leader>wj` | n    | Move to window down  |
-| `<leader>wk` | n    | Move to window up    |
-| `<leader>wl` | n    | Move to window right |
-| `<C-s>h`     | n    | Move to window left  |
-| `<C-s>j`     | n    | Move to window down  |
-| `<C-s>k`     | n    | Move to window up    |
-| `<C-s>l`     | n    | Move to window right |
+| Keys         | Mode | Description           |
+| ------------ | ---- | --------------------- |
+| `<leader>wh` | n    | Move to window left   |
+| `<leader>wj` | n    | Move to window down   |
+| `<leader>wk` | n    | Move to window up     |
+| `<leader>wl` | n    | Move to window right  |
+| `<leader>w=` | n    | Equalize split sizes  |
 
 ## Teleport (Quick Open Splits)
 
-| Keys         | Mode | Description                            |
-| ------------ | ---- | -------------------------------------- |
-| `<leader>vk` | n    | Open keymaps.lua in right split        |
-| `<leader>vg` | n    | Open github_repos dir in right split   |
-| `<leader>vn` | n    | Open nvim config dir in right split    |
-| `<leader>vs` | n    | Open vertical split                    |
-| `<leader>vl` | n    | Resize window left, open WezTerm right |
+| Keys         | Mode | Description                          |
+| ------------ | ---- | ------------------------------------ |
+| `<leader>vg` | n    | Open gitlab_repos dir in right split |
+| `<leader>vs` | n    | Open vertical split                  |
 
-## Misc
+## Buffers
 
-| Keys         | Mode | Description     |
-| ------------ | ---- | --------------- |
-| `<leader>ws` | n    | Open Cursor app |
+| Keys         | Mode | Description              |
+| ------------ | ---- | ------------------------ |
+| `<S-h>`      | n    | Previous buffer          |
+| `<S-l>`      | n    | Next buffer              |
+| `<leader>bd` | n    | Close buffer             |
+| `<leader>bo` | n    | Close other buffers      |
+| `<leader>bt` | n    | Toggle bufferline (tabs) |
 
 ## Completion (nvim-cmp)
 
@@ -181,12 +174,6 @@ Leader key: `Space`
 | `<leader>aS` | n    | Claude status                          |
 | `<C-,>`      | t    | Hide Claude window                     |
 | `<C-g>`      | t    | Hide Claude window                     |
-
-## Debug (debugmaster.nvim)
-
-| Keys        | Mode | Description       |
-| ----------- | ---- | ----------------- |
-| `<leader>d` | n, v | Toggle debug mode |
 
 ## Treesitter Text Objects
 
@@ -242,5 +229,3 @@ Leader key: `Space`
 | `<leader>s?` | n    | Previous comment end     |
 | `<leader>sI` | n    | Previous conditional end |
 | `<leader>sL` | n    | Previous loop end        |
-
-<!-- Test diff: you can accept or deny this line -->

@@ -82,6 +82,9 @@ keymap('n', '<leader>fjjf', function() telescope_find_files(2) end, { desc = 'Fi
 keymap('n', '<leader>fjjjf', function() telescope_find_files(3) end, { desc = 'Find Files (3 Dirs Up)' })
 
 keymap('n', '<leader>fb', '<cmd>Telescope buffers<cr>', { desc = 'Find Buffers' })
+keymap('n', '<leader>fw',
+  function() vim.fn.jobstart('bash /Users/jfaulkner/.config/tmux/plugins/plain/scripts/sessionx.sh', { detach = true }) end,
+  { desc = 'Tmux sessionx' })
 keymap('n', '<leader>fr', '<cmd>Telescope oldfiles<cr>', { desc = 'Find Recent Files' })
 keymap('n', '<leader>fe', '<cmd>Telescope oldbuffers<cr>', { desc = 'Find Recent Buffers' })
 
@@ -110,6 +113,10 @@ keymap('n', '<leader>fj', function()
   require('custom_plugins.telescope_history').history_picker()
 end, { desc = 'Persistent File History' })
 
+-- Line navigation
+keymap({ "n", "v" }, "gh", "^", { desc = "Go to first non-blank character" })
+keymap({ "n", "v" }, "gl", "g_", { desc = "Go to last non-blank character" })
+
 -- Moving Text
 keymap("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move highlighted block down" })
 keymap("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move highlighted block up" })
@@ -122,23 +129,46 @@ end, { desc = "Run ESLint in popup" })
 keymap("n", "<leader>wq", ":wq<CR>")
 keymap("n", "<leader>ww", ":w<CR>", { desc = "Save file" })
 keymap("n", "<leader>we", ":w<CR>:Oil<CR>")
+keymap("n", "-", "<cmd>Oil<CR>", { desc = "Open parent directory in Oil" })
+keymap("n", "<leader>ae", ":edit!<CR>", { desc = "Reload file from disk" })
 
 
 -- Clipboard
 keymap("n", "<leader>y", '"+y', { desc = "Yank to clipboard" })
 keymap("v", "<leader>y", '"+y', { desc = "Yank to clipboard" })
+keymap("n", "<leader>cy", function()
+  require("custom_plugins.chrome_auth").copy_auth_token()
+end, { desc = "Copy Auth0 token and run in Chrome console" })
 
 -- Indentation
 keymap("v", "<", "<gv", { desc = "Indent left" })
 keymap("v", ">", ">gv", { desc = "Indent right" })
 
--- Variable formatting (visual selection)
-keymap("v", "<leader>sv", function()
-  require("scripts.variable_formatting").format_visual_block()
-end, { desc = "Align assignment block in selection" })
 
--- Open a terminal on the right with leader t l
-keymap('n', '<leader>tl', '<cmd>ToggleTerm direction=vertical size=80<CR>', { desc = 'Terminal right (vertical)' })
+-- Toggle a persistent terminal on the right with leader t l
+local _term_buf = nil
+local _term_win = nil
+keymap('n', '<leader>tl', function()
+  -- If terminal window is open, close it
+  if _term_win and vim.api.nvim_win_is_valid(_term_win) then
+    vim.api.nvim_win_close(_term_win, true)
+    _term_win = nil
+    return
+  end
+  -- If terminal buffer exists and is valid, show it
+  if _term_buf and vim.api.nvim_buf_is_valid(_term_buf) then
+    vim.cmd('botright vnew')
+    _term_win = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_buf(_term_win, _term_buf)
+    vim.cmd('vertical resize 80')
+  else
+    -- Create new terminal
+    vim.cmd('botright vnew | terminal')
+    vim.cmd('vertical resize 80')
+    _term_buf = vim.api.nvim_get_current_buf()
+    _term_win = vim.api.nvim_get_current_win()
+  end
+end, { desc = 'Toggle terminal right (vertical)' })
 keymap('t', '<Esc>', [[<C-\><C-n>]], { desc = 'Exit terminal mode' })
 keymap('t', 'jk', [[<C-\><C-n>]], { desc = 'Exit terminal mode' })
 
@@ -152,7 +182,7 @@ keymap("n", "<leader>gs", vim.lsp.buf.workspace_symbol, opts) -- List workspace 
 keymap("n", "<leader>gj", vim.diagnostic.open_float, opts)    -- Show diagnostics in a floating window
 
 -- LSP Format (Ruff for Python, Prettier + ESLint for JS/TS/React)
-keymap("n", "<leader>gl", function()
+keymap("n", "<leader>gk", function()
   vim.lsp.buf.format({ async = true })
 end, { desc = "Format with LSP + ESLint" })
 
@@ -179,6 +209,7 @@ keymap("n", "<leader>wh", "<C-w>h", opts)
 keymap("n", "<leader>wj", "<C-w>j", opts)
 keymap("n", "<leader>wk", "<C-w>k", opts)
 keymap("n", "<leader>wl", "<C-w>l", opts)
+keymap("n", "<leader>w=", "<C-w>=", { desc = "Equalize split sizes" })
 
 -- Teleport (opens splits to the right)
 local home = vim.env.HOME
@@ -193,4 +224,29 @@ keymap("n", "<leader>gf", function()
   })
 end, { desc = "Ruff: Fix all auto-fixable issues (no prompt)" })
 
-keymap("n", "<leader>to", "<cmd>silent !wezterm cli spawn --cwd $(pwd) -- lazygit<CR>", opts)
+keymap("n", "<leader>to", function()
+  vim.cmd("silent !tmux new-window -n lazygit -c " .. vim.fn.getcwd() .. " lazygit")
+end, { desc = "Open LazyGit in new tmux window" })
+
+-- Buffer navigation (built-in, no plugin)
+keymap("n", "<S-h>", "<cmd>bprev<CR>", { desc = "Previous buffer" })
+keymap("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Next buffer" })
+keymap("n", "<leader>bo", function()
+  local current = vim.api.nvim_get_current_buf()
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if buf ~= current and vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buflisted then
+      vim.api.nvim_buf_delete(buf, {})
+    end
+  end
+end, { desc = "Close other buffers" })
+keymap("n", "<leader>bd", "<cmd>bdelete<CR>", { desc = "Close buffer" })
+
+
+-- Toggle bufferline visibility (show buffer tabs over Ghostty tab bar)
+keymap("n", "<leader>bt", function()
+  if vim.o.showtabline == 0 then
+    vim.o.showtabline = 2
+  else
+    vim.o.showtabline = 0
+  end
+end, { desc = "Toggle bufferline visibility" })

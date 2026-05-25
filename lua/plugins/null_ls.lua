@@ -1,64 +1,64 @@
 return {
   {
-    "nvimtools/none-ls.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "williamboman/mason.nvim",
-      "jay-babu/mason-null-ls.nvim",
-    },
+    "stevearc/conform.nvim",
     event = { "BufReadPre", "BufNewFile" },
-    config = function()
-      local lsp = vim.lsp
-      -- nvim 0.12 renamed protocol._request_name_to_capability → _request_name_to_server_capability.
-      -- none-ls reads from the old names; alias so capability_is_disabled works.
-      if lsp and lsp.protocol then
-        local src = lsp.protocol._request_name_to_capability
-            or lsp.protocol._request_name_to_server_capability
-        if src then
-          lsp.protocol._request_name_to_capability = src
-          lsp._request_name_to_capability = src
+    cmd = { "ConformInfo" },
+    keys = {
+      {
+        "<leader>cf",
+        function() require("conform").format({ async = true, lsp_fallback = true }) end,
+        mode = { "n", "v" },
+        desc = "Format buffer",
+      },
+    },
+    opts = {
+      formatters_by_ft = {
+        terraform = { "terraform_fmt" },
+        tf = { "terraform_fmt" },
+        javascript = { "prettier" },
+        javascriptreact = { "prettier" },
+        typescript = { "prettier" },
+        typescriptreact = { "prettier" },
+        json = { "prettier" },
+        jsonc = { "prettier" },
+        css = { "prettier" },
+        scss = { "prettier" },
+        html = { "prettier" },
+        markdown = { "prettier" },
+        yaml = { "prettier" },
+      },
+      format_on_save = function(bufnr)
+        if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+          return
         end
-      end
-
-      local null_ls = require("null-ls")
-
-      null_ls.setup({
-        sources = {
-          -- Terraform
-          null_ls.builtins.formatting.terraform_fmt,
-          null_ls.builtins.diagnostics.terraform_validate,
-
-          -- JavaScript/TypeScript/React (Prettier)
-          null_ls.builtins.formatting.prettier.with({
-            filetypes = {
-              "javascript",
-              "javascriptreact",
-              "typescript",
-              "typescriptreact",
-              "json",
-              "css",
-              "scss",
-              "html",
-              "markdown",
-            },
-          }),
-        },
-      })
+        return { timeout_ms = 2000, lsp_fallback = true }
+      end,
+    },
+    init = function()
+      vim.api.nvim_create_user_command("FormatDisable", function(args)
+        if args.bang then
+          vim.b.disable_autoformat = true
+        else
+          vim.g.disable_autoformat = true
+        end
+      end, { bang = true, desc = "Disable autoformat (! = buffer)" })
+      vim.api.nvim_create_user_command("FormatEnable", function()
+        vim.b.disable_autoformat = false
+        vim.g.disable_autoformat = false
+      end, { desc = "Enable autoformat" })
     end,
   },
   {
-    "jay-babu/mason-null-ls.nvim",
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
     dependencies = { "williamboman/mason.nvim" },
     config = function()
-      require("mason-null-ls").setup({
+      require("mason-tool-installer").setup({
         ensure_installed = {
-          "terraform_fmt",
-          "ruff",
+          "terraform",
           "prettier",
-          "eslint_d",
-          "eslint-lsp",
         },
-        automatic_installation = true,
+        auto_update = false,
+        run_on_start = true,
       })
     end,
   },

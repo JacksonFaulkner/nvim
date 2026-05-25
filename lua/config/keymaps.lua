@@ -18,19 +18,15 @@ end, { desc = 'Toggle wrap with 80 char guide' })
 keymap('n', '<leader>if', 'oif __name__ == "__main__":<CR>', { desc = 'Insert Python __main__ guard' })
 
 
--- Telescope
--- Function to get current directory (file or oil/netrw)
+-- fzf-lua pickers
 local function get_search_dir(levels_up)
   local current_dir
 
   if vim.bo.filetype == "oil" then
-    -- For oil.nvim, get the current directory from oil
     current_dir = require('oil').get_current_dir()
   elseif vim.bo.filetype == "netrw" then
-    -- Get the actual netrw directory
     current_dir = vim.b.netrw_curdir or vim.fn.getcwd()
   else
-    -- Get directory of current file
     local file_path = vim.fn.expand("%:p")
     if file_path == "" then
       current_dir = vim.fn.getcwd()
@@ -39,79 +35,60 @@ local function get_search_dir(levels_up)
     end
   end
 
-  -- Navigate up the specified number of levels
-  for i = 1, levels_up do
+  for _ = 1, levels_up do
     current_dir = vim.fn.fnamemodify(current_dir, ":h")
   end
 
   return current_dir
 end
 
--- Abstracted telescope functions
-local function telescope_find_files(levels_up)
-  local levels_text = levels_up == 0 and "Current Dir" or
+local function levels_text(levels_up)
+  return levels_up == 0 and "Current Dir" or
       levels_up .. " Dir" .. (levels_up == 1 and "" or "s") .. " Up"
+end
 
-  require('telescope.builtin').find_files({
+local function fzf_files(levels_up)
+  require('fzf-lua').files({
     cwd = get_search_dir(levels_up),
-    prompt_title = "Find Files (" .. levels_text .. ")"
+    prompt = 'Find Files (' .. levels_text(levels_up) .. ')> ',
   })
 end
 
-local function telescope_grep(levels_up)
-  local levels_text = levels_up == 0 and "Current Dir" or
-      levels_up .. " Dir" .. (levels_up == 1 and "" or "s") .. " Up"
-
-  require('telescope.builtin').live_grep({
+local function fzf_grep(levels_up)
+  require('fzf-lua').live_grep({
     cwd = get_search_dir(levels_up),
-    prompt_title = "Grep (" .. levels_text .. ")"
+    prompt = 'Grep (' .. levels_text(levels_up) .. ')> ',
   })
 end
 
-local function telescope_grep_word(levels_up, whole_word)
-  require('telescope.builtin').grep_string({
-    cwd = get_search_dir(levels_up),
-    search = vim.fn.expand("<cword>"),
-    word_match = whole_word and "-w" or nil
-  })
-end
+keymap('n', '<leader>ff', function() fzf_files(0) end, { desc = 'Find Files (Current Dir)' })
+keymap('n', '<leader>fjf', function() fzf_files(1) end, { desc = 'Find Files (1 Dir Up)' })
+keymap('n', '<leader>fjjf', function() fzf_files(2) end, { desc = 'Find Files (2 Dirs Up)' })
+keymap('n', '<leader>fjjjf', function() fzf_files(3) end, { desc = 'Find Files (3 Dirs Up)' })
 
-keymap('n', '<leader>ff', function() telescope_find_files(0) end, { desc = 'Find Files (Current Dir)' })
-keymap('n', '<leader>fjf', function() telescope_find_files(1) end, { desc = 'Find Files (1 Dir Up)' })
-keymap('n', '<leader>fjjf', function() telescope_find_files(2) end, { desc = 'Find Files (2 Dirs Up)' })
-keymap('n', '<leader>fjjjf', function() telescope_find_files(3) end, { desc = 'Find Files (3 Dirs Up)' })
-
-keymap('n', '<leader>fb', '<cmd>Telescope buffers<cr>', { desc = 'Find Buffers' })
+keymap('n', '<leader>fb', function() require('fzf-lua').buffers() end, { desc = 'Find Buffers' })
 keymap('n', '<leader>fw',
   function() vim.fn.jobstart('bash /Users/jfaulkner/.config/tmux/plugins/plain/scripts/sessionx.sh', { detach = true }) end,
   { desc = 'Tmux sessionx' })
-keymap('n', '<leader>fr', '<cmd>Telescope oldfiles<cr>', { desc = 'Find Recent Files' })
-keymap('n', '<leader>fe', '<cmd>Telescope oldbuffers<cr>', { desc = 'Find Recent Buffers' })
+keymap('n', '<leader>fr', function() require('fzf-lua').oldfiles() end, { desc = 'Find Recent Files' })
 
-keymap('n', '<leader>fg', function() telescope_grep(0) end, { desc = 'Grep (Current Dir)' })
-keymap('n', '<leader>fjg', function() telescope_grep(1) end, { desc = 'Grep (1 Dir Up)' })
-keymap('n', '<leader>fjjg', function() telescope_grep(2) end, { desc = 'Grep (2 Dirs Up)' })
-keymap('n', '<leader>fjjjg', function() telescope_grep(3) end, { desc = 'Grep (3 Dirs Up)' })
+keymap('n', '<leader>fg', function() fzf_grep(0) end, { desc = 'Grep (Current Dir)' })
+keymap('n', '<leader>fjg', function() fzf_grep(1) end, { desc = 'Grep (1 Dir Up)' })
+keymap('n', '<leader>fjjg', function() fzf_grep(2) end, { desc = 'Grep (2 Dirs Up)' })
+keymap('n', '<leader>fjjjg', function() fzf_grep(3) end, { desc = 'Grep (3 Dirs Up)' })
 
 keymap('n', '<leader>fh', function()
-  require('telescope.builtin').find_files({
+  require('fzf-lua').files({
     cwd = vim.fn.getcwd(),
-    prompt_title = 'Find Files (CWD)',
-    no_ignore = true,
+    prompt = 'Find Files (CWD, no ignore)> ',
+    fd_opts = "--color=never --type f --hidden --no-ignore --exclude .git",
+    rg_opts = "--color=never --files --hidden --no-ignore --glob '!.git'",
   })
-end, { desc = 'Find Files (CWD)' })
+end, { desc = 'Find Files (CWD, no ignore)' })
 
 keymap('n', '<leader>fhg', function()
-  require('telescope.builtin').live_grep({
-    cwd = vim.fn.getcwd(),
-    prompt_title = 'Grep (CWD)'
-  })
+  require('fzf-lua').live_grep({ cwd = vim.fn.getcwd(), prompt = 'Grep (CWD)> ' })
 end, { desc = 'Grep (CWD)' })
-
--- Super persistent file history (custom extension)
-keymap('n', '<leader>fj', function()
-  require('custom_plugins.telescope_history').history_picker()
-end, { desc = 'Persistent File History' })
 
 -- Line navigation
 keymap({ "n", "v" }, "gh", "^", { desc = "Go to first non-blank character" })
@@ -179,7 +156,7 @@ keymap("n", "<leader>gr", vim.lsp.buf.references, opts)       -- Show references
 keymap("n", "<leader>gh", vim.lsp.buf.hover, opts)
 keymap("n", "<leader>gt", vim.lsp.buf.type_definition, opts)  -- Show type definition
 keymap("n", "<leader>gs", vim.lsp.buf.workspace_symbol, opts) -- List workspace symbols
-keymap("n", "<leader>gj", vim.diagnostic.open_float, opts)    -- Show diagnostics in a floating window
+-- <leader>gj: Trouble panel (diagnostics + LSP refs) — see lua/plugins/trouble.lua
 
 -- LSP Format (Ruff for Python, Prettier + ESLint for JS/TS/React)
 keymap("n", "<leader>gk", function()

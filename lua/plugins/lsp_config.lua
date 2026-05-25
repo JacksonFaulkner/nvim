@@ -160,52 +160,14 @@ return {
         },
       })
 
-      -- ESLint LSP configuration (replaces eslint_d via null-ls)
       vim.lsp.config('eslint', {
         filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
       })
 
-      -- Enable all configured servers
       vim.lsp.enable({'lua_ls', 'ruff', 'pyright', 'ts_ls', 'terraformls', 'cssls', 'eslint'})
 
-      -- Global format-on-save (prefers null-ls when available)
-      local format_group = vim.api.nvim_create_augroup("LspFormatOnSave", { clear = true })
-      vim.api.nvim_create_autocmd("BufWritePre", {
-          group = format_group,
-          callback = function(args)
-              local bufnr = args.buf
-              local clients = vim.lsp.get_clients({ bufnr = bufnr })
-              local function supports_format(client)
-                  if client.supports_method then
-                      return client:supports_method("textDocument/formatting", bufnr)
-                  end
-                  local caps = client.server_capabilities or {}
-                  return caps.documentFormattingProvider or caps.documentRangeFormattingProvider
-              end
+      -- Format-on-save handled by conform.nvim (see plugins/null_ls.lua)
 
-              local has_null_ls_formatter = false
-
-              for _, client in ipairs(clients) do
-                  if client.name == "null-ls" and supports_format(client) then
-                      has_null_ls_formatter = true
-                      break
-                  end
-              end
-
-              if has_null_ls_formatter then
-                  vim.lsp.buf.format({
-                      bufnr = bufnr,
-                      filter = function(client)
-                          return client.name == "null-ls" and supports_format(client)
-                      end,
-                  })
-              else
-                  vim.lsp.buf.format({ bufnr = bufnr })
-              end
-          end,
-      })
-
-      -- Disable sqls to prevent conflicts
       vim.lsp.config('sqls', { enabled = false })
     end
   },
